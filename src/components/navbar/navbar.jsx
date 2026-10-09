@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ShoppingCartContext } from '../../context/ShoppingCartContext';
 import { ShoppingBagIcon } from '@heroicons/react/24/solid';
@@ -17,24 +17,18 @@ function Navbar() {
         <ul className='flex items-center gap-3'>
             <li className='font-semibold text-lg'><NavLink to='/'>Shopi</NavLink></li>
             <li>
-                <NavLink to='/' 
-                    onClick={()=> context.setSearchByCategory()} 
-                    className={({ isActive} ) => fnIsActive(isActive)}>
+                <NavLink to='/' className={({ isActive} ) => fnIsActive(isActive)}>
                     All
                 </NavLink>
             </li>
-            <li><NavLink to='/clothes' 
-                onClick={()=> context.setSearchByCategory('clothes')} 
-                className={({ isActive} ) => fnIsActive(isActive)}>Clothes</NavLink></li>
-            <li><NavLink to='/electronics' 
-                onClick={()=> context.setSearchByCategory('electronics')} 
-                className={({ isActive} ) => fnIsActive(isActive)}>
+            <li><NavLink to='/clothes' className={({ isActive} ) => fnIsActive(isActive)}>Clothes</NavLink></li>
+            <li><NavLink to='/electronics' className={({ isActive} ) => fnIsActive(isActive)}>
                 Electronics
                 </NavLink>
             </li>
-            <li><NavLink to='/furnitures'  onClick={()=> context.setSearchByCategory('furniture')}className={({ isActive} ) => fnIsActive(isActive)}>Furnitures</NavLink></li>
-            <li><NavLink to='/toys'  onClick={()=> context.setSearchByCategory('toys')} className={({ isActive} ) => fnIsActive(isActive)}>Toys</NavLink></li>
-            <li><NavLink to='/others'  onClick={()=> context.setSearchByCategory('others')} className={({ isActive} ) => fnIsActive(isActive)}>Others</NavLink></li>
+            <li><NavLink to='/furnitures' className={({ isActive} ) => fnIsActive(isActive)}>Furnitures</NavLink></li>
+            <li><NavLink to='/toys' className={({ isActive} ) => fnIsActive(isActive)}>Toys</NavLink></li>
+            <li><NavLink to='/others' className={({ isActive} ) => fnIsActive(isActive)}>Others</NavLink></li>
         </ul>
         <ul className='flex items-center gap-3'>
             <li><NavLink className='text-black/60'>leo@mail.com</NavLink></li>
@@ -42,7 +36,7 @@ function Navbar() {
             <li><NavLink to='/my-account' className={({ isActive} ) => fnIsActive(isActive)}>My account</NavLink></li>
             <li><NavLink to='/sign-in' className={({ isActive} ) => fnIsActive(isActive)}>Sign In</NavLink></li>
             <li className='flex items-center'>
-                <ShoppingBagIcon className='h6 w-6 text-black'></ShoppingBagIcon>
+                <ShoppingBagIcon className='h-6 w-6 text-black'></ShoppingBagIcon>
                 <div>{context.count}</div>
             </li>
         </ul>

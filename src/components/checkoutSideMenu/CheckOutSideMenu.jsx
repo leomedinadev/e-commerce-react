@@ -1,13 +1,15 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { ShoppingCartContext } from '../../context/ShoppingCartContext'
-import { totalPrice} from '../../utils/utils';
+import { firstImage, totalPrice} from '../../utils/utils';
 import OrderCard from '../order-card/OrderCard';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 function CheckOutSideMenu() {
     const context = useContext(ShoppingCartContext);
+    const navigate = useNavigate();
+    const isCartEmpty = context.cartProducts.length === 0;
 
     const handleDelete = (id) => {
         const filteredProducts = context.cartProducts.filter(product => product.id != id)
@@ -15,6 +17,8 @@ function CheckOutSideMenu() {
     }
 
     const handleCheckout = () => {
+        // Sin productos no hay orden que crear
+        if (isCartEmpty) return
         const orderToAdd = {
           date: new Date(),
           products: context.cartProducts,
@@ -24,7 +28,8 @@ function CheckOutSideMenu() {
     
         context.setOrder([...context.order, orderToAdd])
         context.setCartProducts([])
-        context.setCount(0)
+        context.closeCheckoutSideMenu()
+        navigate('/my-orders/last')
     }
 
   return (
@@ -33,7 +38,7 @@ function CheckOutSideMenu() {
             <h2 className='font-medium text-xl'>My Order</h2>
             <div>
                 <XMarkIcon 
-                    className='h6 w-6 text-black cursor-pointer' 
+                    className='h-6 w-6 text-black cursor-pointer' 
                     onClick={() => context.closeCheckoutSideMenu()}>
                 </XMarkIcon>
             </div>
@@ -45,7 +50,7 @@ function CheckOutSideMenu() {
                 key={product.id}
                 id={product.id}
                 title={product.title}
-                imageUrl={product.images}
+                imageUrl={firstImage(product)}
                 price={product.price}
                 handleDelete={handleDelete}
                 />
@@ -57,10 +62,13 @@ function CheckOutSideMenu() {
                 <span className='font-light'>Total:</span>
                 <span className='font-medium text-2xl'>${totalPrice(context.cartProducts)}</span>
             </p>
-            <Link to='/my-orders/last'>
-                <button className='bg-black py-3 text-white w-full rounded-lg' onClick={() => handleCheckout()}>Checkout</button>
-            </Link>
-           
+            <button
+                className='bg-black py-3 text-white w-full rounded-lg disabled:opacity-40 disabled:cursor-not-allowed'
+                disabled={isCartEmpty}
+                onClick={() => handleCheckout()}>
+                Checkout
+            </button>
+
         </div>
         
     </aside>
