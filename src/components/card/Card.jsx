@@ -1,6 +1,7 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { PlusIcon, CheckIcon } from '@heroicons/react/24/solid';
 import { ShoppingCartContext } from '../../context/ShoppingCartContext'
+import { firstImage } from '../../utils/utils'
 
 
 function Card(props) {
@@ -12,12 +13,9 @@ function Card(props) {
   }
 
   const addToCart = (event, productData) => {
-    console.log(shopCartContext);
-    shopCartContext.setCount(shopCartContext.count + 1);
     shopCartContext.setCartProducts([...shopCartContext.cartProducts, productData]);
     shopCartContext.openCheckoutSideMenu();
     shopCartContext.closeProductDetail();
-    console.log(shopCartContext);
   }
 
   const renderIcon = (id) => {
@@ -47,7 +45,7 @@ function Card(props) {
         <span className='absolute bottom-0 left-0 bg-white/60 rounded-lg text-black text-xs m-2 px-3 py-0.5'>
             {props.product.category?.name}
         </span>
-        <img className='w-full h-full object-cover rounded-lg' src={props.product.images[0]} alt='headphones' onClick={() => showProduct(props.product)} />
+        <img className='w-full h-full object-cover rounded-lg' src={firstImage(props.product)} alt={props.product.title} onClick={() => showProduct(props.product)} />
         {renderIcon(props.product.id)}
       </figure>
       <p className='flex justify-between'>

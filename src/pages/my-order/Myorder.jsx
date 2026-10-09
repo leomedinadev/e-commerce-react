@@ -1,16 +1,18 @@
 import { useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 import { Layout } from '../../components/layout/layout'
 import { ShoppingCartContext } from '../../context/ShoppingCartContext'
 import OrderCard from '../../components/order-card/OrderCard'
+import { firstImage } from '../../utils/utils'
 
 function Myorder() {
 
   const context = useContext(ShoppingCartContext)
-  const currentPath = window.location.pathname
-  let index = currentPath.substring(currentPath.lastIndexOf('/') + 1)
-  if (index === 'last') index = context.order?.length - 1
+  // /my-orders/:id muestra esa orden; /my-order y /my-orders/last, la más reciente
+  const { id } = useParams()
+  const index = id === undefined ? context.order.length - 1 : Number(id)
+  const order = context.order[index]
 
   return (
     <Layout>
@@ -22,12 +24,12 @@ function Myorder() {
       </div>
       <div className='flex flex-col w-80'>
         {
-          context.order?.[index]?.products.map(product => (
+          !order ? <p className='font-light'>Order not found.</p> : order.products.map(product => (
             <OrderCard
               key={product.id}
               id={product.id}
               title={product.title}
-              imageUrl={product.images}
+              imageUrl={firstImage(product)}
               price={product.price}
             />
           ))

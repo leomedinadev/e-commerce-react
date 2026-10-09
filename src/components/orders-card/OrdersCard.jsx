@@ -1,15 +1,16 @@
 
 import { ChevronRightIcon } from '@heroicons/react/24/solid'
+import { formatDate } from '../../utils/utils'
 
 function OrdersCard(props) {
     
-  const { totalPrice, totalProducts } = props;
+  const { date, totalPrice, totalProducts } = props;
 
   return (
     <div className="flex justify-between items-center mb-3 border border-black rounded-lg p-4 w-80">
       <div className='flex justify-between w-full'>
         <p className='flex flex-col'>
-          <span className='font-light'>01.02.23</span>
+          <span className='font-light'>{formatDate(date)}</span>
           <span className='font-light'>{totalProducts} articles</span>
         </p>
         <p className='flex items-center gap-2'>

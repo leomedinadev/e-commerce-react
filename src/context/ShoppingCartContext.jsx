@@ -1,10 +1,11 @@
-import { createContext, useState, useEffect } from 'react'
+import { createContext, useState, useEffect, useMemo } from 'react'
+import { filterProducts } from '../utils/utils'
+
+const PRODUCTS_URL = 'https://api.escuelajs.co/api/v1/products'
 
 const ShoppingCartContext = createContext();
 
 function ShoppingCartProvider({children}) {
-
-  const [count, setCount] = useState(0);
 
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
   const openProductDetail = () => setIsProductDetailOpen(true);
@@ -19,65 +20,39 @@ function ShoppingCartProvider({children}) {
 
   // Shopping Cart · Add products to cart
   const [cartProducts, setCartProducts] = useState([])
+  // El contador sale del carrito: así no se desincroniza al quitar productos
+  const count = cartProducts.length
 
   const [order, setOrder] = useState([])
 
   // Get products
   const [items, setItems] = useState([]);
-  const [filteredItems, setFilteredItems] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   // Get products by title
   const [searchByTitle, setSearchByTitle] = useState(null)
   // Get products by category
   const [searchByCategory, setSearchByCategory] = useState(null)
 
   useEffect(() => {
-    fetch('https://api.escuelajs.co/api/v1/products')
-      .then(response => response.json())
+    fetch(PRODUCTS_URL)
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json()
+      })
       .then(data => setItems(data))
+      .catch(() => setLoadError(true))
+      .finally(() => setIsLoading(false))
   }, []);
 
-  const filteredItemsByTitle = (items, searchByTitle) => {
-    return items?.filter(item => item.title.toLowerCase().includes(searchByTitle.toLowerCase()))
-  }
-
-  const filteredItemsByCategory = (items, searchByCategory) => {
-    return items?.filter(item => item.category.name.toLowerCase().includes(searchByCategory.toLowerCase()))
-  }
-
-  const filterBy = (searchType, items, searchByTitle, searchByCategory) => {
-    if (searchType === 'BY_TITLE') {
-      return filteredItemsByTitle(items, searchByTitle)
-    }
-
-    if (searchType === 'BY_CATEGORY') {
-      return filteredItemsByCategory(items, searchByCategory)
-    }
-
-    if (searchType === 'BY_TITLE_AND_CATEGORY') {
-      return filteredItemsByCategory(items, searchByCategory).filter(item => item.title.toLowerCase().includes(searchByTitle.toLowerCase()))
-    }
-
-    if (!searchType) {
-      return items
-    }
-  }
-
-  useEffect(() => {
-    if (searchByTitle && searchByCategory) setFilteredItems(filterBy('BY_TITLE_AND_CATEGORY', items, searchByTitle, searchByCategory))
-    if (searchByTitle && !searchByCategory) setFilteredItems(filterBy('BY_TITLE', items, searchByTitle, searchByCategory))
-    if (!searchByTitle && searchByCategory) setFilteredItems(filterBy('BY_CATEGORY', items, searchByTitle, searchByCategory))
-    if (!searchByTitle && !searchByCategory) setFilteredItems(filterBy(null, items, searchByTitle, searchByCategory))
-  }, [items, searchByTitle, searchByCategory])
-
-
-
-
-  
+  const filteredItems = useMemo(
+    () => filterProducts(items, { title: searchByTitle, category: searchByCategory }),
+    [items, searchByTitle, searchByCategory]
+  )
 
   return (
     <ShoppingCartContext.Provider value={{
       count,
-      setCount,
       openProductDetail,
       closeProductDetail,
       isProductDetailOpen,
@@ -92,6 +67,8 @@ function ShoppingCartProvider({children}) {
       setOrder,
       items,
       setItems,
+      isLoading,
+      loadError,
       searchByTitle,
       setSearchByTitle,
       filteredItems,
